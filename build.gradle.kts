@@ -14,14 +14,11 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    //implementation("org.springframework.boot:spring-boot-starter-web")
-    //implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.moshi:moshi:1.15.2")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
     implementation("jakarta.validation:jakarta.validation-api:3.1.1")
     implementation("io.swagger.core.v3:swagger-annotations:2.2.36")
-    //implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 }
 
