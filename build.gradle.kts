@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
+    id("org.openapi.generator") version "7.15.0"
 }
 
 group = "com.polyglots"
@@ -14,7 +15,37 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.moshi:moshi:1.15.2")
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
+    implementation("jakarta.validation:jakarta.validation-api:3.1.1")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.36")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+}
+
+openApiGenerate {
+    generatorName.set("kotlin-spring")                  // Kotlin + Spring generator
+    inputSpec.set("$rootDir/src/main/resources/specs/user-spec-client-api.yaml") // main spec file
+    outputDir.set("$buildDir/generated")               // where code will be generated
+    apiPackage.set("com.polyglots.userclientapi.api")  // package for interfaces
+    modelPackage.set("com.polyglots.userclientapi.model") // package for models/DTOs
+
+    // Prevent test stubs if you don’t need them
+    generateApiTests.set(false)               // optional
+    generateModelTests.set(false)             // optional
+
+    // Key option: generate interfaces only
+    configOptions.set(
+        mapOf(
+            "interfaceOnly" to "true",
+            "useSpringBoot3" to "true",
+            "useTags" to "true", // optional: groups controllers by tag
+            "serializableModel" to "true", // generates plain models without extra funky annotations
+            "useBeanValidation" to "true",         // makes models cleaner
+            "annotationLibrary" to "SWAGGER2"       // ensures only @JsonProperty on fields
+        )
+    )
 }
 
 tasks.test {
@@ -22,4 +53,12 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(21)
+}
+
+sourceSets {
+    main {
+        kotlin {
+            srcDir("$buildDir/generated/src/main/kotlin")
+        }
+    }
 }
