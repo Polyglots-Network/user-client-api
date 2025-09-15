@@ -1,0 +1,58 @@
+openapi: 3.0.3
+info:
+  title: User Client API
+  version: 1.0.0
+paths:
+  /users:
+    post:
+      summary: Endpoint to create a new user
+      requestBody:
+        description: User information to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "user-client-api-components.yaml#/components/schemas/PostUserRequest"
+      responses:
+        "201":
+          description: New user is successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "user-client-api-components.yaml#/components/schemas/PostUserResponse"
+    get:
+      summary: Endpoint to get multiple users
+      responses:
+        "200":
+          description: Users are successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "user-client-api-components.yaml#/components/schemas/GetMultipleUsersResponse"
+  /users/{userId}:
+    get:
+      summary: Endpoint to get a user by ID
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: User is successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "user-client-api-components.yaml#/components/schemas/GetUserResponse"
+    delete:
+      summary: Endpoint to delete a user by ID
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        "204":
+          description: User is successfully deleted

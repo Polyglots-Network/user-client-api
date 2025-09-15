@@ -1,0 +1,66 @@
+components:
+  schemas:
+    CommonUserModel:
+      type: object
+      required:
+        - username
+        - email
+        - phoneNumber
+      properties:
+        username:
+          type: string
+          minLength: 5
+          maxLength: 20
+        email:
+          type: string
+          minLength: 5
+          maxLength: 100
+          format: email
+        phoneNumber:
+          type: string
+          minLength: 5
+          maxLength: 20
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        secondName:
+          type: string
+          minLength: 1
+          maxLength: 50
+    CommonUserModelWithId:
+      allOf:
+        - $ref: "#/components/schemas/CommonUserModel"
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+    PostUserRequest:
+      allOf:
+        - $ref: "#/components/schemas/CommonUserModel"
+        - type: object
+          required:
+            - password
+          properties:
+            password:
+              type: string
+              minLength: 10
+              maxLength: 50
+    PostUserResponse:
+      allOf:
+        - $ref: "#/components/schemas/CommonUserModelWithId"
+    GetUserResponse:
+      allOf:
+        - $ref: "#/components/schemas/CommonUserModelWithId"
+    GetMultipleUsersResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            allOf:
+              - $ref: "#/components/schemas/CommonUserModelWithId"
+      required:
+        - users
