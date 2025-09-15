@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     id("org.openapi.generator") version "7.15.0"
+    `maven-publish`
 }
 
 group = "com.polyglots"
@@ -13,14 +14,14 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    //implementation("org.springframework.boot:spring-boot-starter-web")
+    //implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.moshi:moshi:1.15.2")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
     implementation("jakarta.validation:jakarta.validation-api:3.1.1")
     implementation("io.swagger.core.v3:swagger-annotations:2.2.36")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+    //implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 }
 
@@ -46,6 +47,18 @@ openApiGenerate {
             "annotationLibrary" to "SWAGGER2"       // ensures only @JsonProperty on fields
         )
     )
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.github.Polyglots-Network"
+            artifactId = "user-client-api"
+            version = "1.0.0"
+
+            from(components["java"])
+        }
+    }
 }
 
 tasks.test {
