@@ -3,6 +3,8 @@ plugins {
     kotlin("plugin.spring") version "1.9.25"
     id("org.openapi.generator") version "7.15.0"
     `maven-publish`
+    id("org.springframework.boot") version "3.5.5"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "com.polyglots"
@@ -14,6 +16,8 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.moshi:moshi:1.15.2")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
@@ -32,6 +36,14 @@ openApiGenerate {
     // Prevent test stubs if you don’t need them
     generateApiTests.set(false)               // optional
     generateModelTests.set(false)             // optional
+
+    globalProperties.set(
+        mapOf(
+            "models" to "",      // generate models
+            "apis" to ""         // generate api interfaces
+            // no "supportingFiles" → nothing else
+        )
+    )
 
     // Key option: generate interfaces only
     configOptions.set(
@@ -60,6 +72,15 @@ publishing {
 
 tasks.test {
     useJUnitPlatform()
+}
+// 1. Make the main Kotlin compilation depend on the generated sources
+tasks.named("compileKotlin") {
+    dependsOn("openApiGenerate")
+}
+
+// 2. Ensure the JAR task includes the compiled generated code
+tasks.named<Jar>("jar") {
+    dependsOn("openApiGenerate")
 }
 kotlin {
     jvmToolchain(21)
