@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.polyglots"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -57,21 +57,11 @@ openApiGenerate {
         )
     )
 }
-
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "com.github.Polyglots-Network"
-            artifactId = "user-client-api"
-            version = "1.0.0"
-
-            from(components["java"])
-        }
-    }
-}
-
-tasks.test {
-    useJUnitPlatform()
+val sourcesJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("sources")
+    // ensure generated sources exist before we collect sources
+    dependsOn(tasks.named("openApiGenerate"))
+    from(sourceSets["main"].allSource)
 }
 // 1. Make the main Kotlin compilation depend on the generated sources
 tasks.named("compileKotlin") {
@@ -81,7 +71,36 @@ tasks.named("compileKotlin") {
 // 2. Ensure the JAR task includes the compiled generated code
 tasks.named<Jar>("jar") {
     dependsOn("openApiGenerate")
+    archiveClassifier.set("")
+    enabled = true
 }
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.github.Polyglots-Network"
+            artifactId = "user-client-api"
+            version = "1.0.0"
+
+            // Publish the normal jar (the file produced by the 'jar' task)
+            artifact(tasks.named<Jar>("jar")) {
+                builtBy(tasks.named("jar"))
+            }
+
+            // Publish sources
+            artifact(sourcesJar) {
+                builtBy(sourcesJar)
+            }
+        }
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
+    enabled = false
+}
+
 kotlin {
     jvmToolchain(21)
 }
